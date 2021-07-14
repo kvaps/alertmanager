@@ -852,6 +852,9 @@ url: <string>
 # above this threshold are truncated. When leaving this at its default value of
 # 0, all alerts are included.
 [ max_alerts: <int> | default = 0 ]
+
+# Perform separate request for each alert
+[ send_ungrouped: <boolean> | default = false ]
 ```
 
 The Alertmanager

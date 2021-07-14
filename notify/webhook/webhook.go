@@ -85,6 +85,17 @@ func truncateAlerts(maxAlerts uint64, alerts []*types.Alert) ([]*types.Alert, ui
 // Notify implements the Notifier interface.
 func (n *Notifier) Notify(ctx context.Context, alerts ...*types.Alert) (bool, error) {
 	alerts, numTruncated := truncateAlerts(n.conf.MaxAlerts, alerts)
+
+	if len(alerts) > 1 && n.conf.SendUngrouped {
+		for _, alert := range alerts {
+			ok, err := n.Notify(ctx, alert)
+			if !ok {
+				return false, err
+			}
+		}
+		return true, nil
+	}
+
 	data := notify.GetTemplateData(ctx, n.tmpl, alerts, n.logger)
 
 	groupKey, err := notify.ExtractGroupKey(ctx)
